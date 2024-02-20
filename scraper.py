@@ -10,18 +10,19 @@ from bs4 import BeautifulSoup
 
 class Scraper:
     def __init__(self, nome, url):
-        self.app = Flask(__name__)
+        self.app = Flask(__name__)  # instancia Flask
         self.url = url
         self.nome = nome
     
     def pesquisa_processo(self, cpf=None, nome=None):
         service = Service()
         options = ChromeOptions()
-        driver = webdriver.Chrome(service=service, options=options)
+        driver = webdriver.Chrome(service=service, options=options)  # inicia um driver do Chrome
         
         try:
-            driver.get(self.url)
+            driver.get(self.url)  # acessa a url fornecida
             
+            # identifica o campo de pesquisa e preenche com o CPF ou nome fornecido
             if nome and not cpf:
                 info = nome
                 campo_pesquisa = driver.find_element(By.XPATH, '//*[@id="fPP:dnp:nomeParte"]')
@@ -29,53 +30,50 @@ class Scraper:
                 info = cpf
                 campo_pesquisa = driver.find_element(By.XPATH, '//*[@id="fPP:dpDec:documentoParte"]')
             
-            campo_pesquisa.click()
-            campo_pesquisa.send_keys(info)
+            campo_pesquisa.click()  # clica no campo de pesquisa
+            campo_pesquisa.send_keys(info)  # insere o texto no campo de pesquisa
             
-            driver.find_element(By.XPATH, '//*[@id="fPP:searchProcessos"]').click()
+            driver.find_element(By.XPATH, '//*[@id="fPP:searchProcessos"]').click()  # clica no botao de pesquisa
             
+            # aguarda ate que a tabela de resultados seja carregada na página
             WebDriverWait(driver, 200).until(
                 EC.visibility_of_element_located((By.XPATH, '//*[@id="fPP:processosTable:tb"]/tr[1]'))
             )
             
-            tabela = driver.find_element(By.XPATH, '//*[@id="fPP:processosGridPanel_body"]')
-            html_tabela = tabela.get_attribute('outerHTML')
+            tabela = driver.find_element(By.XPATH, '//*[@id="fPP:processosGridPanel_body"]')  # localiza a tabela de resultados
+            html_tabela = tabela.get_attribute('outerHTML')  # extrai html da tabela
             
             return html_tabela
             
         finally:
-            driver.quit()
+            driver.quit()  # fecha o navegador apos a execucao
 
-    def save_csv(self, html_tabela):
-        soup = BeautifulSoup(html_tabela, 'html.parser')
+    def format_dataframe(self, html_tabela):
+        soup = BeautifulSoup(html_tabela, 'html.parser')  # cria um objeto BeautifulSoup
         
         dados_tabela = []
-        for linha in soup.find_all('tr'):
+        for linha in soup.find_all('tr'):  # Itera sobre cada linha da tabela
             dados_linha = []
-            link_tag = linha.find('a', class_='btn btn-default btn-sm')
+            link_tag = linha.find('a', class_='btn btn-default btn-sm')  # Localiza o link de detalhes do processo
             if link_tag:
-                link = link_tag.get('onclick').split("'")[3]
-                link = 'https://pje1g.trf1.jus.br' + link
-            dados_linha += [coluna.get_text(strip=True) for coluna in linha.find_all(['th', 'td'])]
+                link = link_tag.get('onclick').split("'")[3]  
+                link = 'https://pje1g.trf1.jus.br' + link 
+            dados_linha += [coluna.get_text(strip=True) for coluna in linha.find_all(['th', 'td'])]  
             if 'Ver detalhes do processo' in dados_linha:
                 indice = dados_linha.index('Ver detalhes do processo')
                 dados_linha[indice] = link
             dados_tabela.append(dados_linha)
         
-        df = pd.DataFrame(dados_tabela, columns=['link', 'processo', 'ultima_movimentacao'])
-        df = df.iloc[2:]
+        df = pd.DataFrame(dados_tabela, columns=['link', 'processo', 'ultima_movimentacao'])  # Cria DataFrame com os dados
+        df = df.iloc[2:]  
         df.reset_index(drop=True, inplace=True)
-        
-        filepath = 'lista_processos.csv'
-        df.to_csv(filepath, index=False)
-        return filepath
+        return df
     
     def run_server(self):
-        @self.app.route('/')
+        @self.app.route('/')  # Rota padrao para acessar a aplicacao
         def consulta_processos():
-            html_tabela = self.pesquisa_processo(nome=self.nome)
-            filepath = self.save_csv(html_tabela)
-            df = pd.read_csv(filepath)
-            return render_template('index.html', table=df.to_html())
+            html_tabela = self.pesquisa_processo(nome=self.nome)  # Realiza a pesquisa de processo
+            df = self.format_dataframe(html_tabela) 
+            return render_template('index.html', table=df.to_html())  # Renderiza a tabela HTML na página
         
-        self.app.run(debug=True)
+        self.app.run(debug=True)  # inicia o servidor Flask

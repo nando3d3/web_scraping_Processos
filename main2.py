@@ -92,4 +92,4 @@ def consulta_processo_post():
 
 
 
-app.run()
+app.run(port='10000')

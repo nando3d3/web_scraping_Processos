@@ -1,4 +1,5 @@
 from scraper import *
+from flask_cors import CORS
 
 def main():
     #nome = 'Débora de Oliveira'

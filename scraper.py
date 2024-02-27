@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+from flask_cors import CORS
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -6,12 +7,14 @@ from selenium.webdriver import ChromeOptions
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd
+import json
 from bs4 import BeautifulSoup
 
 
 class Scraper:
     def __init__(self, url):
-        self.app = Flask(__name__)  # instancia Flask
+        self.app = Flask(__name__)
+        CORS(self.app)
         self.url = url
 
     def pesquisa_processo(self, data_request):
@@ -97,18 +100,13 @@ class Scraper:
 
     def run_server(self):
 
-        # @self.app.route("/")  # Rota padrao para acessar a aplicacao
-        # def consulta_processos():
-        #     # Realiza a pesquisa de processo
-        #     df = self.format_dataframe(html_tabela)
-        #     return render_template(
-        #         "index.html", table=df.to_html()
-        #     )  # Renderiza a tabela HTML na página
-
-        @self.app.route("/consulta", methods=["POST"])
+        @self.app.route("/", methods=["POST"])
         def consulta_processo_post():
             data_request = request.get_json()
             df_json = self.return_json_dataframe(data_request)
-            return df_json
+            df_json = json.loads(df_json)
+            response_data = {"items": df_json}  # Envolve o array JSON retornado em um objeto com a chave "items"
+            return response_data  # Retorna a resposta como JSON
+
 
         self.app.run(debug=True)  # inicia o servidor Flask

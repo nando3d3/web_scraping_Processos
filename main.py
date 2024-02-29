@@ -1,10 +1,10 @@
-from scraper import *
-from flask_cors import CORS
+from ScraperAPI import ScraperAPI
+
 
 def main():
     #nome = 'Débora de Oliveira'
     # nome = 'Iran Velasco Nascimento'
-    api = Scraper('https://pje1g.trf1.jus.br/consultapublica/ConsultaPublica/listView.seam')
+    api = ScraperAPI()
     api.run_server()
     
 if __name__ == "__main__":

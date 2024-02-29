@@ -100,8 +100,8 @@ class ProcessSearcher:
     def _return_json_dataframe(self):
         try:
             json_data = self.df.to_json(orient="records")
+            json_data = json.loads(json_data)
             json_data = {"items": json_data}
-            #json_data = json.loads(json_data)
             return json_data
         except Exception as e:
             print(e)

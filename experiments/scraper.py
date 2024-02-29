@@ -10,11 +10,11 @@ import pandas as pd
 import json
 from bs4 import BeautifulSoup
 import os
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
 
 class Scraper:
-    load_dotenv()
+    #load_dotenv()
     port = os.getenv('PORT')
     print(port)
     def __init__(self, url):
@@ -115,3 +115,12 @@ class Scraper:
 
 
         self.app.run(debug=True, port= self.port)  # inicia o servidor Flask
+
+def main():
+    #nome = 'Débora de Oliveira'
+    # nome = 'Iran Velasco Nascimento'
+    api = Scraper('https://pje1g.trf1.jus.br/consultapublica/ConsultaPublica/listView.seam')
+    api.run_server()
+    
+if __name__ == "__main__":
+    main()

@@ -9,9 +9,14 @@ from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd
 import json
 from bs4 import BeautifulSoup
+import os
+from dotenv import load_dotenv
 
 
 class Scraper:
+    load_dotenv()
+    port = os.getenv('PORT')
+    print(port)
     def __init__(self, url):
         self.app = Flask(__name__)
         CORS(self.app)
@@ -109,4 +114,4 @@ class Scraper:
             return response_data  # Retorna a resposta como JSON
 
 
-        self.app.run(debug=True)  # inicia o servidor Flask
+        self.app.run(debug=True, port= self.port)  # inicia o servidor Flask

@@ -73,7 +73,7 @@ def format_dataframe(html_tabela):
         dados_tabela, columns=["link", "processo", "ultima_movimentacao"]
     )  # Cria DataFrame com os dados
     df = df.iloc[2:]
-    df.reset_index(drop=True, inplace=True)
+    df.reset_index(drop=True, inplace=True )
     return df
 
 
@@ -91,5 +91,4 @@ def consulta_processo_post():
     return df_json
 
 
-
-app.run(port='10000')
+app.run(port= process.env.port )

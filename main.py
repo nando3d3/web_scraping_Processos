@@ -1,11 +1,8 @@
-from ScraperAPI import ScraperAPI
+import Cors
+import os
+import views
 
+app=Cors.App
 
-def main():
-    #nome = 'Débora de Oliveira'
-    # nome = 'Iran Velasco Nascimento'
-    api = ScraperAPI()
-    api.run_server()
-    
-if __name__ == "__main__":
-    main()
+if __name__=="__main__":
+    app.run(debug= True)

@@ -30,7 +30,7 @@ class ProcessSearcher:
             if "cpf" in dr:
                 info = dr["cpf"]
                 search_field = self.driver.find_element(
-                    By.XPATH, '//*[@id="fPP:dnp:nomeParte"]'
+                    By.XPATH, '//*[@id="fPP:dpDec:documentoParte"]'
                 )
             elif "nome" in dr:
                 info = dr["nome"]

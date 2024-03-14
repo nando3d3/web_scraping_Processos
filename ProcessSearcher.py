@@ -10,19 +10,20 @@ import json
 
 class ProcessSearcher:
     def __init__(self, data_request):
-        print("entrando process searcher")
         service = Service()
         options = ChromeOptions()
+        options.add_argument("--no-sandbox") #desativa o sandbox
+        #options.add_argument("--headless") #executa sem GUI
+        options.add_argument("--disable-gpu") #desabilita aceleracao de hardware
         self.driver = webdriver.Chrome(options, service)
         self.data_request = data_request
         self.df = pd.DataFrame(columns = ["link", "processo", "ultima_movimentacao"])
         
-        self._search_pje_df()
+        self._search_pje_trf1()
         self.json_response = self._return_json_dataframe()
         self.driver.quit()
     
-    def _search_pje_df(self):
-        print("entrnado no search pje df")
+    def _search_pje_trf1(self):
         try:
             self.driver.get('https://pje1g.trf1.jus.br/consultapublica/ConsultaPublica/listView.seam')
             
@@ -57,10 +58,7 @@ class ProcessSearcher:
             table = self.driver.find_element(
                 By.XPATH, '//*[@id="fPP:processosGridPanel_body"]'
             )
-            print("tabela formatada")
             html_table = table.get_attribute("outerHTML")
-            print(html_table)
-            
             
             self._format_dataframe_pje_df(html_table)
         

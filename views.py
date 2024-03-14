@@ -11,7 +11,5 @@ data = []
 def search_process():
 
     data_request = request.get_json()
-    print("recebendo data_request")
-    print(data_request)
     data_response = ProcessSearcher(data_request)
     return data_response.json_response

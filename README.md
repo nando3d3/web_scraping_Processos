@@ -37,7 +37,7 @@ Os seguintes TRFs têm processos disponíveis no PJe para consulta:
 - [TRF-5](https://pje.trf5.jus.br/pje/ConsultaPublica/listView.seam)
 - [TRF-6](https://pje1g.trf6.jus.br/consultapublica/ConsultaPublica/listView.seam)
 
-## Eproc
+### Eproc
 
 O eproc é um sistema completo de tramitação, movimentação e controle de processos de primeiro e segundo graus de jurisdição.
 
@@ -59,3 +59,9 @@ No Eproc é possível realizar consulta pública de processos no:
 <figcaption>Interface para consulta do TRF-4</figcaption>
 </figure>
 </center>
+
+## Pesquisa processual CNJ
+
+A consulta processual do CNJ pelo PJE é uma ferramenta digital que permite acompanhar o andamento de processos judiciais de forma ágil e transparente. Através do PJE, advogados, partes e cidadãos podem acessar informações sobre seus casos, como despachos, decisões e prazos, promovendo maior transparência no sistema judicial brasileiro e fortalecendo a confiança na justiça.
+
+- [CNJ](https://www.cnj.jus.br/pjecnj/ConsultaPublica/listView.seam)

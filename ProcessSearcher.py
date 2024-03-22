@@ -20,31 +20,26 @@ class ProcessSearcher:
         self.data_request = data_request
         self.df = pd.DataFrame(columns=["link", "processo", "ultima_movimentacao"])
 
-        link_trf1 = "https://pje1g.trf1.jus.br"
-        trf1 = "https://pje1g.trf1.jus.br/consultapublica/ConsultaPublica/listView.seam"
-        nome_trf1 = "trf1"
+        trf1  = ["https://pje1g.trf1.jus.br","https://pje1g.trf1.jus.br/consultapublica/ConsultaPublica/listView.seam" ,"trf1" ]
+        trf3 = "https://pje1g.trf3.jus.br/pje","https://pje1g.trf3.jus.br/pje/ConsultaPublica/listView.seam", "trf3"
+        trf6 = ["https://pje1g.trf6.jus.br", "https://pje1g.trf6.jus.br/consultapublica/ConsultaPublica/listView.seam", "trf6"]
+        cnj = ["https://www.cnj.jus.br/pjecnj","https://www.cnj.jus.br/pjecnj/ConsultaPublica/listView.seam", "cnj"]
 
-        link_trf3 = "https://pje1g.trf3.jus.br/pje"
-        trf3 = "https://pje1g.trf3.jus.br/pje/ConsultaPublica/listView.seam"
-        nome_trf3 = "trf3"
-
-        link_trf6 = "https://pje1g.trf6.jus.br"
-        trf6 = "https://pje1g.trf6.jus.br/consultapublica/ConsultaPublica/listView.seam"
-        nome_trf6 = "trf6"
-        
-        link_cnj = "https://www.cnj.jus.br/pjecnj"
-        cnj = "https://www.cnj.jus.br/pjecnj/ConsultaPublica/listView.seam"
-        nome_cnj = "cnj"
-        
         json_list = []
 
-        json_list.append(self._search_pje_trf(trf1, link_trf1, nome_trf1))
-        # json_list.append(self._search_pje_trf(trf3, link_trf3, nome_trf3))
-        # json_list.append(self._search_pje_trf(trf6, link_trf6, nome_trf6))
-        # json_list.append(self._search_pje_trf(cnj, link_cnj,nome_cnj))
-        self.driver.quit()
-        self.json_response = self.concatenar_jsons(json_list)
 
+        try:
+            json_list.append(self._search_pje_trf(cnj[0], cnj[1],cnj[2]))
+            json_list.append(self._search_pje_trf(trf1[0], trf1[1], trf1[2]))
+            json_list.append(self._search_pje_trf(trf3[0], trf3[1], trf3[2]))
+            json_list.append(self._search_pje_trf(trf6[0], trf6[1], trf6[2]))
+            self.driver.quit()
+ 
+            self.concatenar_jsons(json_list)
+             
+            
+        except Exception as e:
+            print(e.with_traceback)
         
     def concatenar_jsons(self, jsons):
         print("--------------------------------")
@@ -62,7 +57,7 @@ class ProcessSearcher:
         return json_concatenado 
                  
 
-    def _search_pje_trf(self, url, link, nome_trf):
+    def _search_pje_trf(self, link, url, nome_trf):
         print("iniciando pesquisa no: "+str(url))
 
 
@@ -88,7 +83,7 @@ class ProcessSearcher:
             self.driver.find_element(By.XPATH, '//*[@id="fPP:searchProcessos"]').click()
 
             # wait result table
-            WebDriverWait(self.driver, 90).until(
+            WebDriverWait(self.driver, 70).until(
                 EC.visibility_of_element_located(
                     (By.XPATH, '//*[@id="fPP:processosTable:tb"]/tr[1]')
                 )

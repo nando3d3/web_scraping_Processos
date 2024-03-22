@@ -19,8 +19,8 @@ async def search_process(request: Request):
     data_request = (
         await request.json()
     )
-    data_response = ProcessSearcher(data_request)
-    # return data_response.json_response
+    ProcessSearcher(data_request)
+
 
 if __name__ == "__main__":
     try:

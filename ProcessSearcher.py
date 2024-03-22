@@ -14,7 +14,7 @@ class ProcessSearcher:
         service = Service()
         options = ChromeOptions()
         options.add_argument("--no-sandbox")  # desativa o sandbox
-        # options.add_argument("--headless") #executa sem GUI
+        #options.add_argument("--headless") #executa sem GUI
         options.add_argument("--disable-gpu")  # desabilita aceleracao de hardware
         self.driver = webdriver.Chrome(options, service)
         self.data_request = data_request
@@ -22,22 +22,48 @@ class ProcessSearcher:
 
         link_trf1 = "https://pje1g.trf1.jus.br"
         trf1 = "https://pje1g.trf1.jus.br/consultapublica/ConsultaPublica/listView.seam"
+        nome_trf1 = "trf1"
 
         link_trf3 = "https://pje1g.trf3.jus.br/pje"
         trf3 = "https://pje1g.trf3.jus.br/pje/ConsultaPublica/listView.seam"
+        nome_trf3 = "trf3"
 
-        link_trf6 = "https://pje1g.trf6.jus.brr"
+        link_trf6 = "https://pje1g.trf6.jus.br"
         trf6 = "https://pje1g.trf6.jus.br/consultapublica/ConsultaPublica/listView.seam"
+        nome_trf6 = "trf6"
+        
+        link_cnj = "https://www.cnj.jus.br/pjecnj"
+        cnj = "https://www.cnj.jus.br/pjecnj/ConsultaPublica/listView.seam"
+        nome_cnj = "cnj"
+        
+        json_list = []
 
-        # self._search_pje_trf(trf1, link_trf1)
-        self._search_pje_trf(trf3, link_trf3)
-        # self._search_pje_trf(trf6, link_trf6)
-        # self._search_pje_trf1()
-
-        # self.json_response = self._return_json_dataframe()
+        json_list.append(self._search_pje_trf(trf1, link_trf1, nome_trf1))
+        json_list.append(self._search_pje_trf(trf3, link_trf3, nome_trf3))
+        json_list.append(self._search_pje_trf(trf6, link_trf6, nome_trf6))
+        json_list.append(self._search_pje_trf(cnj, link_cnj,nome_cnj))
         self.driver.quit()
+        self.json_response = self.concatenar_jsons(json_list)
 
-    def _search_pje_trf(self, url, link):
+        
+    def concatenar_jsons(self, jsons):
+        print("--------------------------------")
+        print("iniciando concatenação dos jsons")
+        resultado = {}
+
+        for json_str in jsons:
+            # Converte o JSON para dicionário
+            json_dict = json.loads(json_str)
+
+            resultado.update(json_dict)
+            
+        json_concatenado = json.dumps(resultado)
+        print(json_concatenado)
+        return json_concatenado 
+                 
+
+    def _search_pje_trf(self, url, link, nome_trf):
+        print("iniciando pesquisa no: "+str(url))
 
 
         try:
@@ -62,22 +88,23 @@ class ProcessSearcher:
             self.driver.find_element(By.XPATH, '//*[@id="fPP:searchProcessos"]').click()
 
             # wait result table
-            WebDriverWait(self.driver, 200).until(
+            WebDriverWait(self.driver, 90).until(
                 EC.visibility_of_element_located(
                     (By.XPATH, '//*[@id="fPP:processosTable:tb"]/tr[1]')
                 )
             )
 
-            # localiza tabela e extrai html
+            # localiza tabela e extrai html 
             table = self.driver.find_element(
                 By.XPATH, '//*[@id="fPP:processosGridPanel_body"]'
             )
             html_table = table.get_attribute("outerHTML")
 
-            self._format_dataframe_pje_df(html_table, link)
+            df_formated = self._format_dataframe_pje_df(html_table, link)
+            return self._return_json_dataframe(df_formated, nome_trf)
 
         except Exception as e:
-            print(e)
+            print(e.with_traceback)
 
     def _format_dataframe_pje_df(self, html_table, link_trf):
         soup = BeautifulSoup(html_table, "html.parser")
@@ -107,19 +134,24 @@ class ProcessSearcher:
         )
         df_pje = df_pje.iloc[2:]
         df_pje.reset_index(drop=True, inplace=True)
+        return df_pje
+        
 
-        self.df = pd.concat([self.df, df_pje], ignore_index=True)
-        print("data frame econtrado: ")
-        print(str(self.df))
+        
+
+        
+
 
     # Funções para outros sites
     # ...
 
-    def _return_json_dataframe(self):
+    def _return_json_dataframe(self, df, nome_trf):
         try:
-            json_data = self.df.to_json(orient="records")
-            json_data = json.loads(json_data)
-            json_data = {"items": json_data}
-            return json_data
+            json_data = df.to_json(orient="records")
+            json_data = {nome_trf: json_data}
+            json_object = json.dumps(json_data)
+            print("json from dataframe: "+str(json_object))
+        
+            return json_object
         except Exception as e:
             print(e)

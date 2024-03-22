@@ -39,9 +39,9 @@ class ProcessSearcher:
         json_list = []
 
         json_list.append(self._search_pje_trf(trf1, link_trf1, nome_trf1))
-        json_list.append(self._search_pje_trf(trf3, link_trf3, nome_trf3))
-        json_list.append(self._search_pje_trf(trf6, link_trf6, nome_trf6))
-        json_list.append(self._search_pje_trf(cnj, link_cnj,nome_cnj))
+        # json_list.append(self._search_pje_trf(trf3, link_trf3, nome_trf3))
+        # json_list.append(self._search_pje_trf(trf6, link_trf6, nome_trf6))
+        # json_list.append(self._search_pje_trf(cnj, link_cnj,nome_cnj))
         self.driver.quit()
         self.json_response = self.concatenar_jsons(json_list)
 

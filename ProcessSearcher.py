@@ -34,7 +34,7 @@ class ProcessSearcher:
             json_list.append(self._search_pje_trf(trf3[0], trf3[1], trf3[2]))
             json_list.append(self._search_pje_trf(trf6[0], trf6[1], trf6[2]))
             self.driver.quit()
- 
+    
             self.concatenar_jsons(json_list)
              
             
@@ -54,6 +54,8 @@ class ProcessSearcher:
             
         json_concatenado = json.dumps(resultado)
         print(json_concatenado)
+        # adcionar verificação para n tentar somar json nulos, evita erro e tambem avisa caso a concatenaçao dos jsons seja nula
+        # vai mostrar que nao houve pesquisas para nenhum tribunal dado o nome informado.
         return json_concatenado 
                  
 
@@ -83,11 +85,23 @@ class ProcessSearcher:
             self.driver.find_element(By.XPATH, '//*[@id="fPP:searchProcessos"]').click()
 
             # wait result table
-            WebDriverWait(self.driver, 70).until(
-                EC.visibility_of_element_located(
-                    (By.XPATH, '//*[@id="fPP:processosTable:tb"]/tr[1]')
+            
+            
+            WebDriverWait(self.driver, 30).until(
+            EC.any_of(
+                EC.visibility_of_element_located((By.XPATH, '//*[@id="fPP:processosTable:tb"]/tr[1]')),
+                EC.visibility_of_element_located((By.XPATH, '//*[@id="fPP:j_id229"]/dt')),
+                EC.visibility_of_element_located((By.XPATH, '//*[@id="fPP:j_id224"]/dt')),
+                EC.visibility_of_element_located((By.XPATH, '//*[@id="fPP:j_id219"]/dt')),
+                EC.visibility_of_element_located((By.XPATH, '//*[@id="fPP:j_id230"]/dt'))
                 )
             )
+            
+            # WebDriverWait(self.driver, 70).until (
+            #     EC.visibility_of_element_located(
+            #         (By.XPATH, '//*[@id="fPP:processosTable:tb"]/tr[1]')
+            #     )
+            # )
 
             # localiza tabela e extrai html 
             table = self.driver.find_element(
@@ -96,6 +110,7 @@ class ProcessSearcher:
             html_table = table.get_attribute("outerHTML")
 
             df_formated = self._format_dataframe_pje_df(html_table, link)
+              
             return self._return_json_dataframe(df_formated, nome_trf)
 
         except Exception as e:

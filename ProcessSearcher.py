@@ -87,7 +87,7 @@ class ProcessSearcher:
             # wait result table
             
             
-            WebDriverWait(self.driver, 30).until(
+            WebDriverWait(self.driver, 60).until(
             EC.any_of(
                 EC.visibility_of_element_located((By.XPATH, '//*[@id="fPP:processosTable:tb"]/tr[1]')),
                 EC.visibility_of_element_located((By.XPATH, '//*[@id="fPP:j_id229"]/dt')),

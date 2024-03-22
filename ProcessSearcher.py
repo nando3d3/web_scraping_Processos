@@ -20,48 +20,32 @@ class ProcessSearcher:
         self.data_request = data_request
         self.df = pd.DataFrame(columns=["link", "processo", "ultima_movimentacao"])
 
-        trf1  = ["https://pje1g.trf1.jus.br","https://pje1g.trf1.jus.br/consultapublica/ConsultaPublica/listView.seam" ,"trf1" ]
-        trf3 = "https://pje1g.trf3.jus.br/pje","https://pje1g.trf3.jus.br/pje/ConsultaPublica/listView.seam", "trf3"
-        trf6 = ["https://pje1g.trf6.jus.br", "https://pje1g.trf6.jus.br/consultapublica/ConsultaPublica/listView.seam", "trf6"]
-        cnj = ["https://www.cnj.jus.br/pjecnj","https://www.cnj.jus.br/pjecnj/ConsultaPublica/listView.seam", "cnj"]
+        trf1  = ["https://pje1g.trf1.jus.br","https://pje1g.trf1.jus.br/consultapublica/ConsultaPublica/listView.seam"]
+        trf3 = ["https://pje1g.trf3.jus.br/pje","https://pje1g.trf3.jus.br/pje/ConsultaPublica/listView.seam"]
+        trf6 = ["https://pje1g.trf6.jus.br", "https://pje1g.trf6.jus.br/consultapublica/ConsultaPublica/listView.seam"]
+        cnj = ["https://www.cnj.jus.br/pjecnj","https://www.cnj.jus.br/pjecnj/ConsultaPublica/listView.seam"]
 
-        json_list = []
+        json_dict = {}
 
-
-        try:
-            json_list.append(self._search_pje_trf(cnj[0], cnj[1],cnj[2]))
-            json_list.append(self._search_pje_trf(trf1[0], trf1[1], trf1[2]))
-            json_list.append(self._search_pje_trf(trf3[0], trf3[1], trf3[2]))
-            json_list.append(self._search_pje_trf(trf6[0], trf6[1], trf6[2]))
-            self.driver.quit()
-    
-            self.concatenar_jsons(json_list)
-             
-            
-        except Exception as e:
-            print(e.with_traceback)
+        json_dict['trf1'] = self._search_pje_trf(trf1[0], trf1[1])
+        json_dict['trf3'] = self._search_pje_trf(trf3[0], trf3[1])
+        json_dict["trf6"] = self._search_pje_trf(trf6[0], trf6[1])
+        json_dict['cnj'] = self._search_pje_trf(cnj[0], cnj[1])
+        self.driver.quit()
+        self.json_response = self.concatenar_jsons(json_dict)    
         
     def concatenar_jsons(self, jsons):
-        print("--------------------------------")
-        print("iniciando concatenação dos jsons")
-        resultado = {}
-
-        for json_str in jsons:
-            # Converte o JSON para dicionário
-            json_dict = json.loads(json_str)
-
-            resultado.update(json_dict)
-            
-        json_concatenado = json.dumps(resultado)
-        print(json_concatenado)
-        # adcionar verificação para n tentar somar json nulos, evita erro e tambem avisa caso a concatenaçao dos jsons seja nula
-        # vai mostrar que nao houve pesquisas para nenhum tribunal dado o nome informado.
-        return json_concatenado 
+        json_final = {}
+        
+        for key, df in jsons.items():
+            if df is not None:
+                json_final[key] = df.to_json(orient="records")
+                json_final[key] = json.loads(json_final[key])
+        
+        return json_final
                  
 
-    def _search_pje_trf(self, link, url, nome_trf):
-        print("iniciando pesquisa no: "+str(url))
-
+    def _search_pje_trf(self, link, url):
 
         try:
             self.driver.get(url)
@@ -109,9 +93,7 @@ class ProcessSearcher:
             )
             html_table = table.get_attribute("outerHTML")
 
-            df_formated = self._format_dataframe_pje_df(html_table, link)
-              
-            return self._return_json_dataframe(df_formated, nome_trf)
+            return self._format_dataframe_pje_df(html_table, link)
 
         except Exception as e:
             print(e.with_traceback)
@@ -145,23 +127,6 @@ class ProcessSearcher:
         df_pje = df_pje.iloc[2:]
         df_pje.reset_index(drop=True, inplace=True)
         return df_pje
-        
-
-        
-
-        
-
 
     # Funções para outros sites
     # ...
-
-    def _return_json_dataframe(self, df, nome_trf):
-        try:
-            json_data = df.to_json(orient="records")
-            json_data = {nome_trf: json_data}
-            json_object = json.dumps(json_data)
-            print("json from dataframe: "+str(json_object))
-        
-            return json_object
-        except Exception as e:
-            print(e)

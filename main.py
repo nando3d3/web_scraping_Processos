@@ -19,12 +19,13 @@ async def search_process(request: Request):
     data_request = (
         await request.json()
     )
-    return ProcessSearcher(data_request)
+    data_response = ProcessSearcher(data_request)
+    return data_response.json_response
 
 
 if __name__ == "__main__":
     try:
-        start_ngrok_with_token()
+        #start_ngrok_with_token()
         print("Pressione CTRC + C para fechar...")
         uvicorn.run(app, port=1344)
     except Exception as e:

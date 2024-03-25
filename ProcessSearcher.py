@@ -39,8 +39,9 @@ class ProcessSearcher:
         
         for key, df in jsons.items():
             if df is not None:
-                json_final[key] = df.to_json(orient="records")
-                json_final[key] = json.loads(json_final[key])
+                df_json = df.to_json(orient="records")
+                if json.loads(df_json):
+                    json_final[key] = json.loads(df_json)
         
         return json_final
                  

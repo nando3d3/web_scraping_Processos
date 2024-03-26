@@ -21,9 +21,9 @@ class ProcessSearcher:
         self.df = pd.DataFrame(columns=["link", "processo", "ultima_movimentacao"])
 
         trf1  = ["https://pje1g.trf1.jus.br","https://pje1g.trf1.jus.br/consultapublica/ConsultaPublica/listView.seam"]
-        trf3 = ["https://pje1g.trf3.jus.br/pje","https://pje1g.trf3.jus.br/pje/ConsultaPublica/listView.seam"]
+        trf3 = ["https://pje1g.trf3.jus.br","https://pje1g.trf3.jus.br/pje/ConsultaPublica/listView.seam"]
         trf6 = ["https://pje1g.trf6.jus.br", "https://pje1g.trf6.jus.br/consultapublica/ConsultaPublica/listView.seam"]
-        cnj = ["https://www.cnj.jus.br/pjecnj","https://www.cnj.jus.br/pjecnj/ConsultaPublica/listView.seam"]
+        cnj = ["https://www.cnj.jus.br","https://www.cnj.jus.br/pjecnj/ConsultaPublica/listView.seam"]
 
         json_dict = {}
 
@@ -45,7 +45,6 @@ class ProcessSearcher:
         
         return json_final
                  
-
     def _search_pje_trf(self, link, url):
 
         try:
@@ -72,7 +71,7 @@ class ProcessSearcher:
             # wait result table
             
             
-            WebDriverWait(self.driver, 60).until(
+            WebDriverWait(self.driver, 100).until(
             EC.any_of(
                 EC.visibility_of_element_located((By.XPATH, '//*[@id="fPP:processosTable:tb"]/tr[1]')),
                 EC.visibility_of_element_located((By.XPATH, '//*[@id="fPP:j_id229"]/dt')),

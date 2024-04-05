@@ -14,37 +14,43 @@ class ProcessSearcher:
         service = Service()
         options = ChromeOptions()
         options.add_argument("--no-sandbox")  # desativa o sandbox
-        #options.add_argument("--headless") #executa sem GUI
-        options.add_argument("--disable-gpu")  # desabilita aceleracao de hardware
+        # options.add_argument("--headless") #executa sem GUI
+        # desabilita aceleracao de hardware
+        options.add_argument("--disable-gpu")
         self.driver = webdriver.Chrome(options, service)
         self.data_request = data_request
-        self.df = pd.DataFrame(columns=["link", "processo", "ultima_movimentacao"])
+        self.df = pd.DataFrame(
+            columns=["link", "processo", "ultima_movimentacao"])
 
-        trf1  = ["https://pje1g.trf1.jus.br","https://pje1g.trf1.jus.br/consultapublica/ConsultaPublica/listView.seam"]
-        trf3 = ["https://pje1g.trf3.jus.br","https://pje1g.trf3.jus.br/pje/ConsultaPublica/listView.seam"]
-        trf6 = ["https://pje1g.trf6.jus.br", "https://pje1g.trf6.jus.br/consultapublica/ConsultaPublica/listView.seam"]
-        cnj = ["https://www.cnj.jus.br","https://www.cnj.jus.br/pjecnj/ConsultaPublica/listView.seam"]
+        trf1 = ["https://pje1g.trf1.jus.br",
+                "https://pje1g.trf1.jus.br/consultapublica/ConsultaPublica/listView.seam"]
+        trf3 = ["https://pje1g.trf3.jus.br",
+                "https://pje1g.trf3.jus.br/pje/ConsultaPublica/listView.seam"]
+        trf6 = ["https://pje1g.trf6.jus.br",
+                "https://pje1g.trf6.jus.br/consultapublica/ConsultaPublica/listView.seam"]
+        cnj = ["https://www.cnj.jus.br",
+               "https://www.cnj.jus.br/pjecnj/ConsultaPublica/listView.seam"]
 
         json_dict = {}
 
-        json_dict['trf1'] = self._search_pje_trf(trf1[0], trf1[1])
-        json_dict['trf3'] = self._search_pje_trf(trf3[0], trf3[1])
-        json_dict["trf6"] = self._search_pje_trf(trf6[0], trf6[1])
+        # json_dict['trf1'] = self._search_pje_trf(trf1[0], trf1[1])
+        # json_dict['trf3'] = self._search_pje_trf(trf3[0], trf3[1])
+        # json_dict["trf6"] = self._search_pje_trf(trf6[0], trf6[1])
         json_dict['cnj'] = self._search_pje_trf(cnj[0], cnj[1])
         self.driver.quit()
-        self.json_response = self.concatenar_jsons(json_dict)    
-        
+        self.json_response = json_dict
+
     def concatenar_jsons(self, jsons):
         json_final = {}
-        
+
         for key, df in jsons.items():
             if df is not None:
                 df_json = df.to_json(orient="records")
                 if json.loads(df_json):
                     json_final[key] = json.loads(df_json)
-        
+
         return json_final
-                 
+
     def _search_pje_trf(self, link, url):
 
         try:
@@ -66,28 +72,33 @@ class ProcessSearcher:
             search_field.send_keys(info)
 
             # clica botao de pesquisa
-            self.driver.find_element(By.XPATH, '//*[@id="fPP:searchProcessos"]').click()
+            self.driver.find_element(
+                By.XPATH, '//*[@id="fPP:searchProcessos"]').click()
 
             # wait result table
-            
-            
+
             WebDriverWait(self.driver, 100).until(
-            EC.any_of(
-                EC.visibility_of_element_located((By.XPATH, '//*[@id="fPP:processosTable:tb"]/tr[1]')),
-                EC.visibility_of_element_located((By.XPATH, '//*[@id="fPP:j_id229"]/dt')),
-                EC.visibility_of_element_located((By.XPATH, '//*[@id="fPP:j_id224"]/dt')),
-                EC.visibility_of_element_located((By.XPATH, '//*[@id="fPP:j_id219"]/dt')),
-                EC.visibility_of_element_located((By.XPATH, '//*[@id="fPP:j_id230"]/dt'))
+                EC.any_of(
+                    EC.visibility_of_element_located(
+                        (By.XPATH, '//*[@id="fPP:processosTable:tb"]/tr[1]')),
+                    EC.visibility_of_element_located(
+                        (By.XPATH, '//*[@id="fPP:j_id229"]/dt')),
+                    EC.visibility_of_element_located(
+                        (By.XPATH, '//*[@id="fPP:j_id224"]/dt')),
+                    EC.visibility_of_element_located(
+                        (By.XPATH, '//*[@id="fPP:j_id219"]/dt')),
+                    EC.visibility_of_element_located(
+                        (By.XPATH, '//*[@id="fPP:j_id230"]/dt'))
                 )
             )
-            
+
             # WebDriverWait(self.driver, 70).until (
             #     EC.visibility_of_element_located(
             #         (By.XPATH, '//*[@id="fPP:processosTable:tb"]/tr[1]')
             #     )
             # )
 
-            # localiza tabela e extrai html 
+            # localiza tabela e extrai html
             table = self.driver.find_element(
                 By.XPATH, '//*[@id="fPP:processosGridPanel_body"]'
             )

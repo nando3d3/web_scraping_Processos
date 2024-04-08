@@ -158,6 +158,9 @@
   ('anyio.to_thread',
    'C:\\Users\\ferna\\Documents\\Whatever\\unb\\tcu\\web_scraping_TCU\\env\\lib\\site-packages\\anyio\\to_thread.py',
    'PYMODULE'),
+  ('app',
+   'C:\\Users\\ferna\\Documents\\Whatever\\unb\\tcu\\web_scraping_TCU\\app.py',
+   'PYMODULE'),
   ('argparse',
    'C:\\Program '
    'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\\lib\\argparse.py',

@@ -8,8 +8,6 @@ import webbrowser
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
 templates = Jinja2Templates(directory="templates")
 
 # captura resultado da pesquisa e realiza web scrap
@@ -17,7 +15,6 @@ templates = Jinja2Templates(directory="templates")
 async def search_process(request: Request, pesquisa: str = Form(...)):
     data_request = {"nome": pesquisa}
     data_response = ProcessSearcher(data_request).table_response
-    print('data_response: ', data_response)
     # retorna página de resultados formatada
     return templates.TemplateResponse("resultado.html", {"request": request, "pesquisa": pesquisa, "resultado": data_response})
     

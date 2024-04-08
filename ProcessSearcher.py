@@ -33,9 +33,9 @@ class ProcessSearcher:
 
         tables_dict = {}
 
-        # tables_dict['trf1'] = self._search_pje_trf(trf1[0], trf1[1])
-        # tables_dict['trf3'] = self._search_pje_trf(trf3[0], trf3[1])
-        # tables_dict["trf6"] = self._search_pje_trf(trf6[0], trf6[1])
+        tables_dict['trf1'] = self._search_pje_trf(trf1[0], trf1[1])
+        tables_dict['trf3'] = self._search_pje_trf(trf3[0], trf3[1])
+        tables_dict["trf6"] = self._search_pje_trf(trf6[0], trf6[1])
         tables_dict['cnj'] = self._search_pje_trf(cnj[0], cnj[1])
         self.driver.quit()
 

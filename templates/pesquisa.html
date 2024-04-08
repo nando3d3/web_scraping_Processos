@@ -38,21 +38,6 @@
         .search-container input[type="submit"]:hover {
             background-color: #0056b3;
         }
-
-        .loader {
-            display: none; /* Inicialmente escondido */
-            border: 4px solid #f3f3f3; /* Cinza claro */
-            border-top: 4px solid #3498db; /* Azul */
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite; /* Animação de rotação */
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
     </head>
     <body>
@@ -62,42 +47,44 @@
                 onsubmit="return validateForm()">
                 <input type="text" placeholder="Digite sua pesquisa"
                     name="pesquisa" id="pesquisa" required>
-                <input type="radio" name="tipo_pesquisa" value="cpf"> Pesquisar
-                por CPF
-                <input type="radio" name="tipo_pesquisa" value="nome" ,
-                    checked=True> Pesquisar
-                por Nome
-                <input type="submit" value="Pesquisar">
-                <div id="loader" class="loader"></div>
+                <input type="submit" value="Pesquisar"> <br>
+                <div style="margin-top:25px;">
+                    <input type="radio" name="tipo_pesquisa" value="nome" ,checked=True> Pesquisar por Nome
+                    <input type="radio" name="tipo_pesquisa" value="cpf"> Pesquisar por CPF
+                </div>
+                
             </form>
         </div>
 
         <script>
     function validateForm() {
         var pesquisaInput = document.getElementById("pesquisa");
-        var tipoPesquisa = document.querySelector('input[name="tipo_pesquisa"]:checked').value;
+        var tipoPesquisa = document.querySelector('input[name="tipo_pesquisa"]:checked');
+
+        if (!tipoPesquisa) {
+            alert("Selecione um tipo de pesquisa");
+            return false;
+        }
+
+        tipoPesquisa = tipoPesquisa.value;
 
         if (tipoPesquisa === "cpf") {
-            // Garante que apenas números sejam aceitos na caixa de texto
+            
             if (!/^\d+$/.test(pesquisaInput.value)) {
                 alert("Por favor, insira apenas números para pesquisar por CPF.");
                 pesquisaInput.focus();
                 return false;
             }
         } else if (tipoPesquisa === "nome") {
-            // Garante que apenas letras e espaços sejam aceitos na caixa de texto
             if (!/^[a-zA-Z\s]*$/.test(pesquisaInput.value)) {
                 alert("Por favor, insira apenas letras e espaços para pesquisar por Nome.");
                 pesquisaInput.focus();
                 return false;
             }
         }
+        
 
         return true;
-    }
-
-    function showLoader() {
-        document.getElementById("loader").style.display = "inline-block";
     }
 </script>
 

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pesquisa de Processos Externos</title>
-    <style>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Pesquisa de Processos Externos</title>
+        <style>
         body {
             font-family: 'Trebuchet MS', sans-serif;
             margin: 0;
@@ -54,22 +54,52 @@
             100% { transform: rotate(360deg); }
         }
     </style>
-</head>
-<body>
+    </head>
+    <body>
 
-<div class="search-container">
-    <form method="POST" action="/result">
-        <input type="text" placeholder="Digite sua pesquisa" name="pesquisa" required>
-        <input type="submit" value="Pesquisar">
-        <div id="loader" class="loader"></div>
-    </form>
-</div>
+        <div class="search-container">
+            <form method="POST" action="/result"
+                onsubmit="return validateForm()">
+                <input type="text" placeholder="Digite sua pesquisa"
+                    name="pesquisa" id="pesquisa" required>
+                <input type="radio" name="tipo_pesquisa" value="cpf"> Pesquisar
+                por CPF
+                <input type="radio" name="tipo_pesquisa" value="nome" ,
+                    checked=True> Pesquisar
+                por Nome
+                <input type="submit" value="Pesquisar">
+                <div id="loader" class="loader"></div>
+            </form>
+        </div>
 
-<script>
+        <script>
+    function validateForm() {
+        var pesquisaInput = document.getElementById("pesquisa");
+        var tipoPesquisa = document.querySelector('input[name="tipo_pesquisa"]:checked').value;
+
+        if (tipoPesquisa === "cpf") {
+            // Garante que apenas números sejam aceitos na caixa de texto
+            if (!/^\d+$/.test(pesquisaInput.value)) {
+                alert("Por favor, insira apenas números para pesquisar por CPF.");
+                pesquisaInput.focus();
+                return false;
+            }
+        } else if (tipoPesquisa === "nome") {
+            // Garante que apenas letras e espaços sejam aceitos na caixa de texto
+            if (!/^[a-zA-Z\s]*$/.test(pesquisaInput.value)) {
+                alert("Por favor, insira apenas letras e espaços para pesquisar por Nome.");
+                pesquisaInput.focus();
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     function showLoader() {
         document.getElementById("loader").style.display = "inline-block";
     }
 </script>
 
-</body>
+    </body>
 </html>

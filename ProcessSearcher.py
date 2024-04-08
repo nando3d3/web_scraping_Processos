@@ -33,36 +33,36 @@ class ProcessSearcher:
 
         tables_dict = {}
 
-        tables_dict['trf1'] = self._search_pje_trf(trf1[0], trf1[1])
-        tables_dict['trf3'] = self._search_pje_trf(trf3[0], trf3[1])
-        tables_dict["trf6"] = self._search_pje_trf(trf6[0], trf6[1])
+        # tables_dict['trf1'] = self._search_pje_trf(trf1[0], trf1[1])
+        # tables_dict['trf3'] = self._search_pje_trf(trf3[0], trf3[1])
+        # tables_dict["trf6"] = self._search_pje_trf(trf6[0], trf6[1])
         tables_dict['cnj'] = self._search_pje_trf(cnj[0], cnj[1])
         self.driver.quit()
-        
-        
+
         self.table_response = self.format_html_table(tables_dict)
 
-    #Formata o dicionário, transformando os df em tabelas e colocando titulo
+    # Formata o dicionário, transformando os df em tabelas e colocando titulo
     def format_html_table(self, tables_dict):
         html_tables = ""
         for title, df in tables_dict.items():
             if df is not None:
                 df = self.transform_to_links(df)
-                
+
                 html_tables += f"<h2>{title.upper()}</h2>\n"
                 html_tables += df.to_html(index=False, escape=False)
         return html_tables
-                
+
     # transforma columa de processo em hyperlink
     def transform_to_links(self, df: pd.DataFrame) -> pd.DataFrame:
         def make_link(row):
             return f'<a href="{row["link"]}"  target="_blank">{row["processo"]}</a>'
-        
+
         df['ultima_movimentacao'] = df.apply(make_link, axis=1)
         df.drop(columns=['link'], inplace=True)
-        df = df.rename(columns={'processo': 'Processo', 'ultima_movimentacao': 'Última Movimentação'})
+        df = df.rename(columns={'processo': 'Processo',
+                       'ultima_movimentacao': 'Última Movimentação'})
         return df
-        
+
     def _search_pje_trf(self, link, url):
 
         try:

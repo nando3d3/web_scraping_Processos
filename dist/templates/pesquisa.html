@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Pesquisa de Processos Externos</title>
+        <style>
+        body {
+            font-family: 'Trebuchet MS', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #D1D4E1;
+        }
+        .search-container {
+            text-align: center;
+        }
+        .search-container input[type="text"] {
+            padding: 10px;
+            width: 300px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-right: 5px;
+        }
+        .search-container input[type="submit"] {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+        .search-container input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    </head>
+    <body>
+
+        <div class="search-container">
+            <form method="POST" action="/result"
+                onsubmit="return validateForm()">
+                <input type="text" placeholder="Digite sua pesquisa"
+                    name="pesquisa" id="pesquisa" required>
+                <input type="submit" value="Pesquisar"> <br>
+                <div style="margin-top:25px;">
+                    <input type="radio" name="tipo_pesquisa" value="nome" ,checked=True> Pesquisar por Nome
+                    <input type="radio" name="tipo_pesquisa" value="cpf"> Pesquisar por CPF
+                </div>
+                
+            </form>
+        </div>
+
+        <script>
+    function validateForm() {
+        var pesquisaInput = document.getElementById("pesquisa");
+        var tipoPesquisa = document.querySelector('input[name="tipo_pesquisa"]:checked');
+
+        if (!tipoPesquisa) {
+            alert("Selecione um tipo de pesquisa");
+            return false;
+        }
+
+        tipoPesquisa = tipoPesquisa.value;
+
+        if (tipoPesquisa === "cpf") {
+            
+            if (!/^\d+$/.test(pesquisaInput.value)) {
+                alert("Por favor, insira apenas números para pesquisar por CPF.");
+                pesquisaInput.focus();
+                return false;
+            }
+        } else if (tipoPesquisa === "nome") {
+            if (!/^[a-zA-Z\s]*$/.test(pesquisaInput.value)) {
+                alert("Por favor, insira apenas letras e espaços para pesquisar por Nome.");
+                pesquisaInput.focus();
+                return false;
+            }
+        }
+        
+
+        return true;
+    }
+</script>
+
+    </body>
+</html>

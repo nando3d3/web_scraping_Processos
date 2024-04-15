@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesquisa de Processos Externos</title>
+    <style>
+        body {
+            font-family: 'Trebuchet MS', sans-serif;
+            margin: 0;
+            padding: 0;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #D1D4E1;
+        }
+
+        table {
+            width: 100%;
+            background-color: #D9E1E4;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            cursor: pointer;
+            text-align: center;
+        }
+        tr:nth-child(even) {
+            background-color: #EBECEC;
+        }
+        tr:nth-child(odd) {
+            background-color: #E2E2E2;
+        }
+        
+        tr:hover {
+            background-color: #DCDCDC;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .tabela_resultado {
+            margin-right: 100px;
+            padding: 10px;
+        }
+
+        .titulo_pesquisa {
+            
+            font-size: 30px;
+        }
+
+        .main {
+            margin-top: 100px;
+            margin-left: 100px;
+        }
+
+        .nova_pesquisa {
+            margin-bottom: 20px;
+        }
+
+        .nova_pesquisa button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .nova_pesquisa button:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
+</head>
+<body>
+<div class = main>
+
+    <div class= "nova_pesquisa">
+        <button onclick="novaPesquisa()">Nova Pesquisa</button>
+    </div>
+
+    <div class = "titulo_pesquisa">Resultados para <strong>{{ pesquisa | upper}}</strong></div>
+
+    <div class = "tabela_resultado">
+        {{resultado | safe}}
+    </div>
+</div>
+
+<script>
+    function novaPesquisa(){
+        window.location.href = "/";
+    }
+</script>
+</body>
+</html>

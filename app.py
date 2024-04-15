@@ -34,6 +34,7 @@ async def pesquisa_page(request: Request):
 if __name__ == "__main__":
     try:
         # webbrowser.open_new_tab('http://localhost:1344')
+        webbrowser.open_new_tab('http://127.0.0.1:1344/')
         uvicorn.run(app, port=1344)
     except Exception as e:
         print(f'erro ao iniciar:\n {e}')

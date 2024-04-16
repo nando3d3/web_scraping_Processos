@@ -3,3 +3,4 @@ pandas==2.2.0
 selenium==4.18.1
 fastapi==0.110.0
 uvicorn==0.28.0
+unicode==2.9

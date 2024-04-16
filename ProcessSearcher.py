@@ -4,10 +4,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver import ChromeOptions
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import Select
 from bs4 import BeautifulSoup
+import unicodedata
+from urllib.parse import quote
 import pandas as pd
 import json
-
+from time import sleep
 
 class ProcessSearcher:
     def __init__(self, data_request):
@@ -22,6 +25,7 @@ class ProcessSearcher:
         self.df = pd.DataFrame(
             columns=["link", "processo", "ultima_movimentacao"])
 
+        #pje
         trf1 = ["https://pje1g.trf1.jus.br",
                 "https://pje1g.trf1.jus.br/consultapublica/ConsultaPublica/listView.seam"]
         trf3 = ["https://pje1g.trf3.jus.br",
@@ -30,13 +34,18 @@ class ProcessSearcher:
                 "https://pje1g.trf6.jus.br/consultapublica/ConsultaPublica/listView.seam"]
         cnj = ["https://www.cnj.jus.br",
                "https://www.cnj.jus.br/pjecnj/ConsultaPublica/listView.seam"]
+        
+        #site stf
+        stf = ["https://portal.stf.jus.br/processos/", "https://portal.stf.jus.br/processos/listarPartes.asp?termo="]
+        
 
         tables_dict = {}
 
-        tables_dict['trf1'] = self._search_pje_trf(trf1[0], trf1[1])
-        tables_dict['trf3'] = self._search_pje_trf(trf3[0], trf3[1])
-        tables_dict["trf6"] = self._search_pje_trf(trf6[0], trf6[1])
-        tables_dict['cnj'] = self._search_pje_trf(cnj[0], cnj[1])
+        # tables_dict['trf1'] = self._search_pje(trf1[0], trf1[1])
+        # tables_dict['trf3'] = self._search_pje(trf3[0], trf3[1])
+        # tables_dict["trf6"] = self._search_pje(trf6[0], trf6[1])
+        # tables_dict['cnj'] = self._search_pje(cnj[0], cnj[1])
+        self._search_stf(stf[1])
         self.driver.quit()
 
         self.table_response = self.format_html_table(tables_dict)
@@ -63,7 +72,7 @@ class ProcessSearcher:
                        'ultima_movimentacao': 'Última Movimentação'})
         return df
 
-    def _search_pje_trf(self, link, url):
+    def _search_pje(self, link, url):
 
         try:
             self.driver.get(url)
@@ -116,12 +125,12 @@ class ProcessSearcher:
             )
             html_table = table.get_attribute("outerHTML")
 
-            return self._format_dataframe_pje_df(html_table, link)
+            return self._format_dataframe_pje(html_table, link)
 
         except Exception as e:
             print(e.with_traceback)
 
-    def _format_dataframe_pje_df(self, html_table, link_trf):
+    def _format_dataframe_pje(self, html_table, link_trf):
         soup = BeautifulSoup(html_table, "html.parser")
 
         table_data = []
@@ -150,5 +159,64 @@ class ProcessSearcher:
         df_pje.reset_index(drop=True, inplace=True)
         return df_pje
 
-    # Funções para outros sites
-    # ...
+    def _search_stf(self, link):
+        try:
+            dr = self.data_request
+            if "cpf" in dr:
+                return 'erro'
+            elif "nome" in dr:
+                info = dr["nome"]
+                
+            info_quote = quote(info)
+            
+            url_pesquisa = link + info_quote
+            
+            self.driver.get(url_pesquisa)
+            
+            qtde_processo = self.driver.find_element(By.XPATH, '//*[@id="quantidade"]').text
+            qtde_processo = int(qtde_processo)
+            #sleep(10)
+            self._format_dataframe_stf(qtde_processo, info)
+            
+            
+        except Exception as e:
+            print(e.with_traceback)
+
+    def _format_dataframe_stf(self, qtde_processo, nome):
+        nome = self.remover_acentos(nome)
+        
+        df_stf = pd.DataFrame(
+            columns=["link", "processo", "ultima_movimentacao"]
+        )
+        
+        
+        for i in range(1, qtde_processo+1):
+            nome_parte = self.driver.find_element(By.XPATH, f'//*[@id="card_processos"]/div[{i}]/div[2]/div/div[1]/div[2]').text
+            nome_parte = self.remover_acentos(nome_parte)
+            
+            df_stf = pd.DataFrame(
+                columns=["link", "processo", "ultima_movimentacao"]
+            )
+            if nome_parte == nome:
+                link = self.driver.find_element(By.XPATH, f'//*[@id="card_processos"]/div[{i}]/div[1]/h6[1]/span/a').get_attribute('href')
+                print(link + '\n')
+
+                processo = self.driver.find_element(By.XPATH, f'//*[@id="card_processos"]/div[{i}]/div[1]/h6[1]/span/a').text
+                print(processo + '\n')
+                # ult_mov = self.driver.find_element(By.XPATH, f'//*[@id="card_processos"]/div[{i}]/div[2]/div/div[2]/div[2]').text
+                
+                # partes = {"link": link, "processo": processo, "ultima_movimentacao": ult_mov}
+                
+                # df_stf = df_stf.append(partes, ignore_index = True)
+        
+                print(partes)
+                
+    def remover_acentos(self, texto):
+        texto_sem_acentos = ''.join(c for c in unicodedata.normalize('NFD', texto) if unicodedata.category(c) != 'Mn')
+        
+        return texto_sem_acentos
+
+def main():
+    PS = ProcessSearcher({'nome': 'JOÃO SILVA NETO'})
+
+main()

@@ -15,7 +15,7 @@ class ProcessSearcher:
         service = Service()
         options = ChromeOptions()
         options.add_argument("--no-sandbox")  # desativa o sandbox
-        # options.add_argument("--headless") #executa sem GUI
+        #options.add_argument("--headless") #executa sem GUI
         # desabilita aceleracao de hardware
         options.add_argument("--disable-gpu")
         self.driver = webdriver.Chrome(options, service)
@@ -37,9 +37,9 @@ class ProcessSearcher:
 
         tables_dict = {}
 
-        # tables_dict['trf1'] = self._search_pje(trf1[0], trf1[1])
-        # tables_dict['trf3'] = self._search_pje(trf3[0], trf3[1])
-        # tables_dict["trf6"] = self._search_pje(trf6[0], trf6[1])
+        tables_dict['trf1'] = self._search_pje(trf1[0], trf1[1])
+        tables_dict['trf3'] = self._search_pje(trf3[0], trf3[1])
+        tables_dict["trf6"] = self._search_pje(trf6[0], trf6[1])
         tables_dict['cnj'] = self._search_pje(cnj[0], cnj[1])
         tables_dict['stf'] = self._search_stf(stf[1])
         self.driver.quit()
@@ -157,27 +157,27 @@ class ProcessSearcher:
         return df_pje
 
     def _search_stf(self, link):
-        # try:
-        dr = self.data_request
-        if "cpf" in dr:
-            return 'erro'
-        elif "nome" in dr:
-            info = dr["nome"].upper()
-        
-        info_quote = quote(info)
-        
-        url_pesquisa = link + info_quote
-        self.driver.get(url_pesquisa)
-        WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="quantidade"]')))
-        
-        qtde_processo = self.driver.find_element(By.XPATH, '//*[@id="quantidade"]').text
-        qtde_processo = int(qtde_processo)
-        
-        return self._format_dataframe_stf(qtde_processo, info)
+        try:
+            dr = self.data_request
+            if "cpf" in dr:
+                return 'erro'
+            elif "nome" in dr:
+                info = dr["nome"].upper()
+            
+            info_quote = quote(info)
+            
+            url_pesquisa = link + info_quote
+            self.driver.get(url_pesquisa)
+            WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="quantidade"]')))
+            
+            qtde_processo = self.driver.find_element(By.XPATH, '//*[@id="quantidade"]').text
+            qtde_processo = min(int(qtde_processo), 20)
+            
+            return self._format_dataframe_stf(qtde_processo, info)
             
             
-        # except Exception as e:
-        #     print(e.with_traceback)
+        except Exception as e:
+            print(e.with_traceback)
 
     def _format_dataframe_stf(self, qtde_processo, nome):
         nome = self.remover_acentos(nome)

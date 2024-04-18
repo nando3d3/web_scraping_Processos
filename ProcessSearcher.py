@@ -77,6 +77,7 @@ class ProcessSearcher:
             dr = self.data_request
             if "cpf" in dr:
                 info = dr["cpf"]
+                info = info[:3] + '.' + info[3:6] + '.' + info[6:9] + '-' + info[9:]
                 search_field = self.driver.find_element(
                     By.XPATH, '//*[@id="fPP:dpDec:documentoParte"]'
                 )
@@ -160,7 +161,7 @@ class ProcessSearcher:
         try:
             dr = self.data_request
             if "cpf" in dr:
-                return 'erro'
+                return pd.Dataframe(columns = ['link','processo', 'ultima_movimentacao'])
             elif "nome" in dr:
                 info = dr["nome"].upper()
             

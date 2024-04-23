@@ -109,7 +109,14 @@
             z-index: 998;
             display: none;
         }
+        
+        .tribunais-checkbox{
+          margin-top: 10px
+        }
 
+        .tribunais-checkbox label{
+          margin-left:20px;
+        }
 
     </style>
     </head>
@@ -124,7 +131,15 @@
                     <input type="radio" name="tipo_pesquisa" value="nome" ,checked=True> Pesquisar por Nome
                     <input type="radio" name="tipo_pesquisa" value="cpf"> Pesquisar por CPF
                 </div>
-                
+                <div class="tribunais-checkbox">
+                  <label title="Tribunal Regional Federal da 1ª Região"><input type="checkbox" name="tribunais" value="trf1" checked>TRF-1</label>
+                  <label title="Tribunal Regional Federal da 2ª Região"><input type="checkbox" name="tribunais" value="trf2" checked>TRF-2</label>
+                  <label title="Tribunal Regional Federal da 3ª Região"><input type="checkbox" name="tribunais" value="trf3" checked>TRF-3</label>
+                  <label title="Tribunal Regional Federal da 6ª Região"><input type="checkbox" name="tribunais" value="trf6" checked>TRF-6</label>
+                  <label title="Conselho Nacional de Justiça"><input type="checkbox" name="tribunais" value="cnj" checked>CNJ</label>
+                  <label title="Supremo Tribunal Federal"><input type="checkbox" name="tribunais" value="stf" checked>STF</label>
+              </div>
+              
             </form>
         </div>
         
@@ -158,9 +173,28 @@
                         return false;
                     }
                 }
+
+                //verfica tribunais
+                if (!checkTribunais()){
+                  alert("Selecione pelo menos um tribunal para pesquisar!")
+                  return false;
+                }
                 
                 showSpinner();
                 return true;
+            }
+
+            function checkTribunais(){
+              var checkbox = document.querySelectorAll('input[name="tribunais"]');
+              tam = checkbox.length
+              
+              for(var i = 0; i < tam;i ++){
+                if (checkbox[i].checked){
+                  return true;
+                }
+              }
+
+              return false;
             }
 
             function showSpinner() {

@@ -11,7 +11,7 @@ from urllib.parse import quote
 import pandas as pd
 
 class ProcessSearcher:
-    def __init__(self, data_request):
+    def __init__(self, data_request, tribunais):
         service = Service()
         options = ChromeOptions()
         options.add_argument("--no-sandbox")  # desativa o sandbox
@@ -21,30 +21,26 @@ class ProcessSearcher:
         self.driver = webdriver.Chrome(options, service)
         self.data_request = data_request
 
-        #pje
-        trf1 = ["https://pje1g.trf1.jus.br",
-                "https://pje1g.trf1.jus.br/consultapublica/ConsultaPublica/listView.seam"]
-        trf3 = ["https://pje1g.trf3.jus.br",
-                "https://pje1g.trf3.jus.br/pje/ConsultaPublica/listView.seam"]
-        trf6 = ["https://pje1g.trf6.jus.br",
-                "https://pje1g.trf6.jus.br/consultapublica/ConsultaPublica/listView.seam"]
-        cnj = ["https://www.cnj.jus.br",
-               "https://www.cnj.jus.br/pjecnj/ConsultaPublica/listView.seam"]
-        
-        #site stf
-        stf = ["https://portal.stf.jus.br/processos/", "https://portal.stf.jus.br/processos/listarPartes.asp?termo="]
-        
-        #eproc
-        trf2 = ["https://eproc.trf2.jus.br/eproc/externo_controlador.php?acao=processo_consulta_publica"]
+        urls = {
+        "trf1": ["https://pje1g.trf1.jus.br", "https://pje1g.trf1.jus.br/consultapublica/ConsultaPublica/listView.seam"],
+        "trf2": ["https://eproc.trf2.jus.br/eproc/externo_controlador.php?acao=processo_consulta_publica"],
+        "trf3": ["https://pje1g.trf3.jus.br", "https://pje1g.trf3.jus.br/pje/ConsultaPublica/listView.seam"],
+        "trf6": ["https://pje1g.trf6.jus.br", "https://pje1g.trf6.jus.br/consultapublica/ConsultaPublica/listView.seam"],
+        "cnj": ["https://www.cnj.jus.br", "https://www.cnj.jus.br/pjecnj/ConsultaPublica/listView.seam"],
+        "stf": ["https://portal.stf.jus.br/processos/", "https://portal.stf.jus.br/processos/listarPartes.asp?termo="]
+        }
 
         tables_dict = {}
 
-        tables_dict['trf1'] = self._search_pje(trf1[0], trf1[1])
-        tables_dict['trf3'] = self._search_pje(trf3[0], trf3[1])
-        tables_dict["trf6"] = self._search_pje(trf6[0], trf6[1])
-        tables_dict['cnj'] = self._search_pje(cnj[0], cnj[1])
-        tables_dict['stf'] = self._search_stf(stf[1])
-        tables_dict['trf2'] = self._search_eproc(trf2[0])
+        for tribunal in tribunais:
+            if tribunal in urls:
+                if tribunal == "trf2":
+                    tables_dict[tribunal] = self._search_eproc(urls[tribunal][0])
+                elif tribunal == "stf":
+                    tables_dict[tribunal] = self._search_stf(urls[tribunal][1])
+                else:
+                    tables_dict[tribunal] = self._search_pje(urls[tribunal][0], urls[tribunal][1])
+
         self.driver.quit()
 
         self.table_response = self.format_html_table(tables_dict)
@@ -229,11 +225,12 @@ class ProcessSearcher:
             ).click()
             
             #espera tabela de resultados
-            WebDriverWait(self.driver, 70).until (
-                    EC.visibility_of_element_located(
-                        (By.XPATH, '//*[@id="divInfraAreaTabela"]/table')
-                    )
+            WebDriverWait(self.driver, 100).until(
+                EC.any_of(
+                    EC.visibility_of_element_located((By.XPATH, '//*[@id="divInfraAreaTabela"]/table')),
+                    EC.visibility_of_element_located((By.XPATH, '//*[@id="divInfraAreaTabela"]/label'))
                 )
+            )
 
             return self._parse_results()
         

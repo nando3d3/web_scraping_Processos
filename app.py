@@ -5,6 +5,7 @@ from ProcessSearcher import ProcessSearcher
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
+from typing import List
 import webbrowser
 
 app = FastAPI()
@@ -15,10 +16,14 @@ templates = Jinja2Templates(directory="templates")
 
 
 @app.post("/result")
-async def search_process(request: Request, pesquisa: str = Form(...), tipo_pesquisa: str = Form(...)):
+async def search_process(request: Request, 
+                         pesquisa: str = Form(...), 
+                         tipo_pesquisa: str = Form(...),
+                         tribunais: List[str] = Form(...)):
     data_request = {tipo_pesquisa: pesquisa}
     print(str(data_request))
-    data_response = ProcessSearcher(data_request).table_response
+    print(tribunais)
+    data_response = ProcessSearcher(data_request, tribunais).table_response
     # retorna página de resultados formatada
     return templates.TemplateResponse("resultado.html", {"request": request, "pesquisa": pesquisa, "resultado": data_response})
 # Renderiza pagina de pesquisa

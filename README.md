@@ -2,7 +2,7 @@
 
 O projeto é uma aplicação web dedicada à busca e extração de informações de processos judiciais nos tribunais regionais federais (TRF-1, TRF-2, TRF-3, TRF-4, TRF-5, TRF-6), no Conselho Nacional de Justiça (CNJ) e no Supremo Tribunal Federal (STF).
 
-Desenvolvida com o framework [Flask](https://flask.palletsprojects.com/en/3.0.x/) para gerenciar as solicitações HTTP e a biblioteca [Selenium](https://www.selenium.dev/) para automatizar a interação com os sites, a aplicação oferece uma solução abrangente para profissionais do direito, pesquisadores e outros usuários interessados em acessar informações judiciais relevantes.
+Desenvolvida com o framework [FastAPI](https://fastapi.tiangolo.com/) para gerenciar as solicitações HTTP e a biblioteca [Selenium](https://www.selenium.dev/) para automatizar a interação com os sites, a aplicação oferece uma solução abrangente para profissionais do direito, pesquisadores e outros usuários interessados em acessar informações judiciais relevantes.
 
 Por meio da interface web, os usuários podem fornecer critérios de busca, como nome das partes envolvidas ou cpf, e a aplicação executa a busca nos sites dos tribunais pertinentes. Utilizando o WebDriver do Selenium, a aplicação navega pelos sites, extrai os dados dos processos e os apresenta em um formato estruturado e de fácil interpretação.
 

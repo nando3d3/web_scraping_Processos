@@ -34,6 +34,8 @@ class ProcessSearcher:
         #site stf
         stf = ["https://portal.stf.jus.br/processos/", "https://portal.stf.jus.br/processos/listarPartes.asp?termo="]
         
+        #eproc
+        trf2 = ["https://eproc.trf2.jus.br/eproc/externo_controlador.php?acao=processo_consulta_publica"]
 
         tables_dict = {}
 
@@ -42,6 +44,7 @@ class ProcessSearcher:
         tables_dict["trf6"] = self._search_pje(trf6[0], trf6[1])
         tables_dict['cnj'] = self._search_pje(cnj[0], cnj[1])
         tables_dict['stf'] = self._search_stf(stf[1])
+        tables_dict['trf2'] = self._search_eproc(trf2[0])
         self.driver.quit()
 
         self.table_response = self.format_html_table(tables_dict)
@@ -51,10 +54,11 @@ class ProcessSearcher:
         html_tables = ""
         for title, df in tables_dict.items():
             if df is not None:
-                df = self.transform_to_links(df)
+                if not df.empty:
+                    df = self.transform_to_links(df)
 
-                html_tables += f"<h2>{title.upper()}</h2>\n"
-                html_tables += df.to_html(index=False, escape=False)
+                    html_tables += f"<h2>{title.upper()}</h2>\n"
+                    html_tables += df.to_html(index=False, escape=False)
         
         return html_tables
 
@@ -199,6 +203,96 @@ class ProcessSearcher:
                 partes["link"].append(link)
                 partes["processo"].append(processo)
                 partes["ultima_movimentacao"].append(ult_mov)
+        return pd.DataFrame.from_dict(partes)
+    
+    def _search_eproc(self, url):
+        
+        try:
+            self.driver.get(url)
+            
+            dr = self.data_request
+            if "cpf" in dr:
+                search_field = self.driver.find_element(
+                        By.XPATH, '//*[@id="txtCpfCnpj"]'
+                    )
+            elif "nome" in dr:
+                search_field = self.driver.find_element(
+                        By.XPATH, '//*[@id="txtStrParte"]' 
+                    )
+            info = list(dr.values())[0]
+            search_field.click()
+            search_field.send_keys(info)
+            
+            #consulta
+            self.driver.find_element(
+                By.XPATH, '//*[@id="sbmNovo"]'
+            ).click()
+            
+            #espera tabela de resultados
+            WebDriverWait(self.driver, 70).until (
+                    EC.visibility_of_element_located(
+                        (By.XPATH, '//*[@id="divInfraAreaTabela"]/table')
+                    )
+                )
+
+            return self._parse_results()
+        
+        except Exception as e:
+            print(e.with_traceback)
+        
+    def _parse_results(self):
+        
+        linhas = self.driver.find_elements(By.XPATH, '//*[@id="divInfraAreaTabela"]/table/tbody/tr')
+        tam_tabela = len(linhas) + 1
+        dr = self.data_request
+        if "nome" in dr:
+            nome = dr["nome"]
+            dfs = []
+            for i in range(2, tam_tabela):
+                    xpath_nomeParte = f'//*[@id="divInfraAreaTabela"]/table/tbody/tr[{i}]/td[1]'
+                    nome_parte = self.driver.find_element(By.XPATH, xpath_nomeParte).text
+                    
+                    if self.remover_acentos(nome_parte).lower() == self.remover_acentos(nome).lower():
+                        link_processos = self.driver.find_element(By.XPATH, f'{xpath_nomeParte}/a').get_attribute("href")
+                        
+                        #abrir link com processos
+                        self.driver.execute_script("window.open();")
+                        
+                        #muda para nova aba
+                        self.driver.switch_to.window(self.driver.window_handles[1])
+                        
+                        # entra no link de processes
+                        self.driver.get(link_processos)
+
+                        dfs.append(self._info_processos())
+                        
+                        #retorna para aba principal
+                        self.driver.switch_to.window(self.driver.window_handles[0])
+            
+            return pd.concat(dfs, ignore_index=True)
+                
+        return self._info_processos()
+                   
+    def _info_processos(self):
+        partes = {"link": [], "processo": [], "ultima_movimentacao": []}
+        
+        #informacoes sobre processo
+        table_processos = self.driver.find_element(By.XPATH, '//*[@id="divInfraAreaTabela"]/table/tbody')
+        qtde_processos = len(table_processos.find_elements(By.TAG_NAME, 'tr'))
+        
+        for i in range(2, qtde_processos):
+            link = self.driver.find_element(By.XPATH, f'//*[@id="divInfraAreaTabela"]/table/tbody/tr[{i}]/td[1]/a').get_attribute("href")
+            processo = self.driver.find_element(By.XPATH, f'//*[@id="divInfraAreaTabela"]/table/tbody/tr[{i}]/td[1]').text
+            ult_mov =  self.driver.find_element(By.XPATH, f'//*[@id="divInfraAreaTabela"]/table/tbody/tr[{i}]/td[5]').text
+            
+            partes["link"].append(link)
+            partes["processo"].append(processo)
+            
+            if ult_mov == '':
+                ult_mov = 'Acessar Processo'
+            
+            partes["ultima_movimentacao"].append(ult_mov)
+
         return pd.DataFrame.from_dict(partes)
                 
     def remover_acentos(self, texto):

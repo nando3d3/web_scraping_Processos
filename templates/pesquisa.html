@@ -6,51 +6,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pesquisa de Processos Externos</title>
+    <link rel="shortcut icon" type="imagex/png" href="https://cdn-icons-png.flaticon.com/512/200/200941.png">
     <style>
         body {
             font-family: 'Source Sans Pro';
             margin: 0;
             padding: 0;
-            background-color: #D1D4E1;
+            background-color: #D6DCE8;
+            font-weight: bold;
         }
         .topbar {
-            background-color: #46c0f8;
-            color: #FCFCFC;
+            background-color: #2A4070;
             padding: 10px 0;
-        }
-        .topbar .container {
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        .topbar .container img {
-            height: 55px;
+
+        .topbar img {
+          width: 550px;
+          background-color: white;
+          border-radius: 50px;
         }
 
         .search-container {
-            text-align: center;
-            margin-top: 20px; /* Ajuste o espaçamento conforme necessário */
+          text-align: center;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 80vh;
+          color: white;
         }
+
+        .form-container{
+          background-color: #2A4070;
+          padding: 40px;
+        }
+
         .search-container input[type="text"] {
             padding: 10px;
             width: 300px;
             font-size: 16px;
-            border-radius: 5px;
+            border-radius: 0px;
             border: 1px solid #ccc;
             margin-right: 5px;
         }
         .search-container input[type="submit"] {
             padding: 10px 20px;
             font-size: 16px;
-            border-radius: 5px;
+            margin-left:-3px;
             border: none;
-            background-color: #007bff;
-            color: #fff;
+            background-color: #fff;
+            color: black;
             cursor: pointer;
         }
         .search-container input[type="submit"]:hover {
-            background-color: #0056b3;
+            background-color: #D6DCE8;
         }
+
         .spinner {
             -webkit-animation: rotate 2s linear infinite;
             animation: rotate 2s linear infinite;
@@ -122,53 +135,74 @@
         }
         .tribunais-checkbox label {
             margin-left: 20px;
+            accent-color: white;
         }
+
+        input[type=checkbox]: checked+label::before{
+          background-color:red;
+        }
+        
+        .footer {
+          position: fixed;
+          bottom: 0;
+          width: 100%;
+          text-align: center;
+          font-size: 15px;
+          background-color: white;
+          padding: 20px 0;
+      }
+
     </style>
   </head>
   <body>
     <div class="topbar">
-      <div class="container">
-        <img
-          src="https://upload.wikimedia.org/wikipedia/commons/9/97/Tribunal_de_Contas_da_Uni%C3%A3o.png"
-          alt="Logo TCU" width="450px">
-      </div>
-    </div>
-
+      <a href="https://portal.tcu.gov.br/inicio/" target="_blank"><img
+        src="https://upload.wikimedia.org/wikipedia/commons/9/97/Tribunal_de_Contas_da_Uni%C3%A3o.png"
+        alt="Logo TCU">
+      </a>
+  </div>
     <div class="overlay"></div>
     <div class="search-container">
-      <form method="POST" action="/result" onsubmit="return validateForm()">
-        <input type="text" placeholder="Digite sua pesquisa" name="pesquisa"
-          id="pesquisa" required>
-        <input type="submit" value="Pesquisar"> <br>
-        <div style="margin-top:25px;">
-          <input type="radio" name="tipo_pesquisa" value="nome" checked>
-          Pesquisar por Nome
-          <input type="radio" name="tipo_pesquisa" value="cpf"> Pesquisar por
-          CPF
-        </div>
-        <div class="tribunais-checkbox">
-          <label title="Tribunal Regional Federal da 1ª Região">
-            <input type="checkbox" name="tribunais" value="trf1" checked> TRF-1
-          </label>
-          <label title="Tribunal Regional Federal da 2ª Região">
-            <input type="checkbox" name="tribunais" value="trf2" checked> TRF-2
-          </label>
-          <label title="Tribunal Regional Federal da 3ª Região">
-            <input type="checkbox" name="tribunais" value="trf3" checked> TRF-3
-          </label>
-          <label title="Tribunal Regional Federal da 6ª Região">
-            <input type="checkbox" name="tribunais" value="trf6" checked> TRF-6
-          </label>
-          <label title="Conselho Nacional de Justiça">
-            <input type="checkbox" name="tribunais" value="cnj" checked> CNJ
-          </label>
-          <label title="Supremo Tribunal Federal">
-            <input type="checkbox" name="tribunais" value="stf" checked> STF
-          </label>
-        </div>
-      </form>
+      
+      <div class="form-container">
+        <h2 style="text-align:left; padding-bottom:20px;margin-top: -20px;">Consulta Processual</h2>
+        <form method="POST" action="/result" onsubmit="return validateForm()">
+          <input type="text" placeholder="Digite sua pesquisa" name="pesquisa"
+            id="pesquisa" required>
+          <input type="submit" value="Pesquisar"> <br>
+          <div style="margin-top:25px;">
+            <input type="radio" name="tipo_pesquisa" value="nome" checked>
+            Pesquisar por Nome
+            <input type="radio" name="tipo_pesquisa" value="cpf"> Pesquisar por
+            CPF
+          </div>
+          <div class="tribunais-checkbox">
+            <label title="Tribunal Regional Federal da 1ª Região">
+              <input type="checkbox" name="tribunais" value="trf1" checked> TRF-1
+            </label>
+            <label title="Tribunal Regional Federal da 2ª Região">
+              <input type="checkbox" name="tribunais" value="trf2" checked> TRF-2
+            </label>
+            <label title="Tribunal Regional Federal da 3ª Região">
+              <input type="checkbox" name="tribunais" value="trf3" checked> TRF-3
+            </label>
+            <label title="Tribunal Regional Federal da 6ª Região">
+              <input type="checkbox" name="tribunais" value="trf6" checked> TRF-6
+            </label>
+            <label title="Conselho Nacional de Justiça">
+              <input type="checkbox" name="tribunais" value="cnj" checked> CNJ
+            </label>
+            <label title="Supremo Tribunal Federal">
+              <input type="checkbox" name="tribunais" value="stf" checked> STF
+            </label>
+          </div>
+        </form>
+      </div>
+      
     </div>
-
+    <div class="footer">
+      <p>Este programa não possui afiliação legal com o TCU e foi desenvolvido exclusivamente para realizar consultas processuais disponíveis ao público.</p>
+    </div>
     <svg class="spinner" viewBox="0 0 50 50">
       <circle class="path" cx="25" cy="25" r="20" fill="none"
         stroke-width="5"></circle>

@@ -1,22 +1,35 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Pesquisa de Processos Externos</title>
-        <style>
+  <head>
+    <link href='https://fonts.googleapis.com/css?family=Source Sans Pro'
+      rel='stylesheet'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesquisa de Processos Externos</title>
+    <style>
         body {
-            font-family: 'Trebuchet MS', sans-serif;
+            font-family: 'Source Sans Pro';
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             background-color: #D1D4E1;
         }
+        .topbar {
+            background-color: #46c0f8;
+            color: #FCFCFC;
+            padding: 10px 0;
+        }
+        .topbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .topbar .container img {
+            height: 55px;
+        }
+
         .search-container {
             text-align: center;
+            margin-top: 20px; /* Ajuste o espaçamento conforme necessário */
         }
         .search-container input[type="text"] {
             padding: 10px;
@@ -38,10 +51,9 @@
         .search-container input[type="submit"]:hover {
             background-color: #0056b3;
         }
-
         .spinner {
             -webkit-animation: rotate 2s linear infinite;
-                    animation: rotate 2s linear infinite;
+            animation: rotate 2s linear infinite;
             z-index: 999;
             position: absolute;
             top: 50%;
@@ -50,55 +62,51 @@
             width: 100px;
             height: 100px;
             display: none;
-          }
-          .spinner .path {
+        }
+        .spinner .path {
             stroke: #93bfec;
             stroke-linecap: round;
             -webkit-animation: dash 1.5s ease-in-out infinite;
-                    animation: dash 1.5s ease-in-out infinite;
-          }
-          
-          @-webkit-keyframes rotate {
+            animation: dash 1.5s ease-in-out infinite;
+        }
+        @-webkit-keyframes rotate {
             100% {
-              transform: rotate(360deg);
+                transform: rotate(360deg);
             }
-          }
-          
-          @keyframes rotate {
+        }
+        @keyframes rotate {
             100% {
-              transform: rotate(360deg);
+                transform: rotate(360deg);
             }
-          }
-          @-webkit-keyframes dash {
+        }
+        @-webkit-keyframes dash {
             0% {
-              stroke-dasharray: 1, 150;
-              stroke-dashoffset: 0;
+                stroke-dasharray: 1, 150;
+                stroke-dashoffset: 0;
             }
             50% {
-              stroke-dasharray: 90, 150;
-              stroke-dashoffset: -35;
+                stroke-dasharray: 90, 150;
+                stroke-dashoffset: -35;
             }
             100% {
-              stroke-dasharray: 90, 150;
-              stroke-dashoffset: -124;
+                stroke-dasharray: 90, 150;
+                stroke-dashoffset: -124;
             }
-          }
-          @keyframes dash {
+        }
+        @keyframes dash {
             0% {
-              stroke-dasharray: 1, 150;
-              stroke-dashoffset: 0;
+                stroke-dasharray: 1, 150;
+                stroke-dashoffset: 0;
             }
             50% {
-              stroke-dasharray: 90, 150;
-              stroke-dashoffset: -35;
+                stroke-dasharray: 90, 150;
+                stroke-dashoffset: -35;
             }
             100% {
-              stroke-dasharray: 90, 150;
-              stroke-dashoffset: -124;
+                stroke-dasharray: 90, 150;
+                stroke-dashoffset: -124;
             }
-          }
-
-          /* Estilizando a sobreposição semi-transparente */
+        }
         .overlay {
             position: absolute;
             top: 0;
@@ -109,102 +117,116 @@
             z-index: 998;
             display: none;
         }
-        
-        .tribunais-checkbox{
-          margin-top: 10px
+        .tribunais-checkbox {
+            margin-top: 10px;
         }
-
-        .tribunais-checkbox label{
-          margin-left:20px;
+        .tribunais-checkbox label {
+            margin-left: 20px;
         }
-
     </style>
-    </head>
-    <body>
-        <div class="overlay"></div>
-        <div class="search-container">
-            <form method="POST" action="/result" onsubmit="return validateForm()">
-                <input type="text" placeholder="Digite sua pesquisa"
-                    name="pesquisa" id="pesquisa" required>
-                <input type="submit" value="Pesquisar"> <br>
-                <div style="margin-top:25px;">
-                    <input type="radio" name="tipo_pesquisa" value="nome" ,checked=True> Pesquisar por Nome
-                    <input type="radio" name="tipo_pesquisa" value="cpf"> Pesquisar por CPF
-                </div>
-                <div class="tribunais-checkbox">
-                  <label title="Tribunal Regional Federal da 1ª Região"><input type="checkbox" name="tribunais" value="trf1" checked>TRF-1</label>
-                  <label title="Tribunal Regional Federal da 2ª Região"><input type="checkbox" name="tribunais" value="trf2" checked>TRF-2</label>
-                  <label title="Tribunal Regional Federal da 3ª Região"><input type="checkbox" name="tribunais" value="trf3" checked>TRF-3</label>
-                  <label title="Tribunal Regional Federal da 6ª Região"><input type="checkbox" name="tribunais" value="trf6" checked>TRF-6</label>
-                  <label title="Conselho Nacional de Justiça"><input type="checkbox" name="tribunais" value="cnj" checked>CNJ</label>
-                  <label title="Supremo Tribunal Federal"><input type="checkbox" name="tribunais" value="stf" checked>STF</label>
-              </div>
-              
-            </form>
-        </div>
-        
-        <svg class="spinner" viewBox="0 0 50 50">
-            <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
-        </svg>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="container">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/9/97/Tribunal_de_Contas_da_Uni%C3%A3o.png"
+          alt="Logo TCU" width="450px">
+      </div>
+    </div>
 
-        <script>
-            function validateForm() {
-                var pesquisaInput = document.getElementById("pesquisa");
-                var tipoPesquisa = document.querySelector('input[name="tipo_pesquisa"]:checked');
-    
-                if (!tipoPesquisa) {
-                    alert("Selecione um tipo de pesquisa");
+    <div class="overlay"></div>
+    <div class="search-container">
+      <form method="POST" action="/result" onsubmit="return validateForm()">
+        <input type="text" placeholder="Digite sua pesquisa" name="pesquisa"
+          id="pesquisa" required>
+        <input type="submit" value="Pesquisar"> <br>
+        <div style="margin-top:25px;">
+          <input type="radio" name="tipo_pesquisa" value="nome" checked>
+          Pesquisar por Nome
+          <input type="radio" name="tipo_pesquisa" value="cpf"> Pesquisar por
+          CPF
+        </div>
+        <div class="tribunais-checkbox">
+          <label title="Tribunal Regional Federal da 1ª Região">
+            <input type="checkbox" name="tribunais" value="trf1" checked> TRF-1
+          </label>
+          <label title="Tribunal Regional Federal da 2ª Região">
+            <input type="checkbox" name="tribunais" value="trf2" checked> TRF-2
+          </label>
+          <label title="Tribunal Regional Federal da 3ª Região">
+            <input type="checkbox" name="tribunais" value="trf3" checked> TRF-3
+          </label>
+          <label title="Tribunal Regional Federal da 6ª Região">
+            <input type="checkbox" name="tribunais" value="trf6" checked> TRF-6
+          </label>
+          <label title="Conselho Nacional de Justiça">
+            <input type="checkbox" name="tribunais" value="cnj" checked> CNJ
+          </label>
+          <label title="Supremo Tribunal Federal">
+            <input type="checkbox" name="tribunais" value="stf" checked> STF
+          </label>
+        </div>
+      </form>
+    </div>
+
+    <svg class="spinner" viewBox="0 0 50 50">
+      <circle class="path" cx="25" cy="25" r="20" fill="none"
+        stroke-width="5"></circle>
+    </svg>
+
+    <script>
+        function validateForm() {
+            var pesquisaInput = document.getElementById("pesquisa");
+            var tipoPesquisa = document.querySelector('input[name="tipo_pesquisa"]:checked');
+
+            if (!tipoPesquisa) {
+                alert("Selecione um tipo de pesquisa");
+                return false;
+            }
+
+            tipoPesquisa = tipoPesquisa.value;
+
+            if (tipoPesquisa === "cpf") {
+                if (!/^\d+$/.test(pesquisaInput.value)) {
+                    alert("Por favor, insira apenas números para pesquisar por CPF.");
+                    pesquisaInput.focus();
                     return false;
                 }
-    
-                tipoPesquisa = tipoPesquisa.value;
-    
-                if (tipoPesquisa === "cpf") {
-                    
-                    if (!/^\d+$/.test(pesquisaInput.value)) {
-                        alert("Por favor, insira apenas números para pesquisar por CPF.");
-                        pesquisaInput.focus();
-                        return false;
-                    }
-                } else if (tipoPesquisa === "nome") {
-                    if (!/^[a-zA-Z\u00C0-\u00FF\s]*$/.test(pesquisaInput.value)) {
-                        alert("Por favor, insira apenas letras e espaços para pesquisar por Nome.");
-                        pesquisaInput.focus();
-                        return false;
-                    }
+            } else if (tipoPesquisa === "nome") {
+                if (!/^[a-zA-Z\u00C0-\u00FF\s]*$/.test(pesquisaInput.value)) {
+                    alert("Por favor, insira apenas letras e espaços para pesquisar por Nome.");
+                    pesquisaInput.focus();
+                    return false;
                 }
-
-                //verfica tribunais
-                if (!checkTribunais()){
-                  alert("Selecione pelo menos um tribunal para pesquisar!")
-                  return false;
-                }
-                
-                showSpinner();
-                return true;
             }
 
-            function checkTribunais(){
-              var checkbox = document.querySelectorAll('input[name="tribunais"]');
-              tam = checkbox.length
-              
-              for(var i = 0; i < tam;i ++){
-                if (checkbox[i].checked){
-                  return true;
+            // Verifica tribunais
+            if (!checkTribunais()) {
+                alert("Selecione pelo menos um tribunal para pesquisar!");
+                return false;
+            }
+
+            showSpinner();
+            return true;
+        }
+
+        function checkTribunais() {
+            var checkbox = document.querySelectorAll('input[name="tribunais"]');
+            for (var i = 0; i < checkbox.length; i++) {
+                if (checkbox[i].checked) {
+                    return true;
                 }
-              }
-
-              return false;
             }
+            return false;
+        }
 
-            function showSpinner() {
-                var spinner = document.querySelector('.spinner');
-                var overlay = document.querySelector('.overlay');
+        function showSpinner() {
+            var spinner = document.querySelector('.spinner');
+            var overlay = document.querySelector('.overlay');
 
-                spinner.style.display = 'block'; // Exibindo o spinner
-                overlay.style.display = 'block'; // Exibindo a sobreposição
-            }
-</script>
-
-    </body>
+            spinner.style.display = 'block'; // Exibindo o spinner
+            overlay.style.display = 'block'; // Exibindo a sobreposição
+        }
+    </script>
+  </body>
 </html>

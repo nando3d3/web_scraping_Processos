@@ -261,6 +261,18 @@
             spinner.style.display = 'block'; // Exibindo o spinner
             overlay.style.display = 'block'; // Exibindo a sobreposição
         }
+
+        window.onunload = function() {
+          hideSpinner();
+        };
+    
+        function hideSpinner() {
+          var spinner = document.querySelector('.spinner');
+          var overlay = document.querySelector('.overlay');
+    
+          spinner.style.display = 'none'; // Esconde o spinner
+          overlay.style.display = 'none'; // Esconde a sobreposição
+        }
     </script>
   </body>
 </html>

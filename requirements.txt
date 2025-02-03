@@ -4,3 +4,5 @@ selenium==4.18.1
 fastapi==0.110.0
 uvicorn==0.28.0
 unicode==2.9
+Jinja2==3.1.*
+python-multipart==0.0.20
